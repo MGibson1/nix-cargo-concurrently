@@ -8,16 +8,18 @@
   };
 
   outputs = inputs@{ self, nixpkgs, flake-utils, ... }:
-    flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+    {
+      overlays.default = (final: prev: { inherit (self.packages.${final.system}) concurrently; });
+    } // flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        concurrently = pkgs.callPackage ./concurrently.nix { inherit pkgs; };
       in
       rec {
-        packages.concurrently = pkgs.callPackage ./concurrently.nix { inherit pkgs; };
-
-        legacyPackages = packages;
-
-        defaultPackage = packages.concurrently;
+        packages = {
+          inherit concurrently;
+          default = concurrently;
+        };
 
         devShell = pkgs.mkShell {
           CARGO_INSTALL_ROOT = "${toString ./.}/.cargo";
