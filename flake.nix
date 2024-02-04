@@ -8,17 +8,19 @@
   };
 
   outputs = inputs@{ self, nixpkgs, flake-utils, ... }:
-  flake-utils.lib.eachSystem [ "x86_64-linux" ] (system: let
-    pkgs = nixpkgs.legacyPackages.${system};
-  in rec {
-    packages.concurrently = pkgs.callPackage ./concurrently.nix { inherit pkgs; };
+    flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      rec {
+        packages.concurrently = pkgs.callPackage ./concurrently.nix { inherit pkgs; };
 
-    legacyPackages = packages;
+        legacyPackages = packages;
 
-    defaultPackage = packages.concurrently;
+        defaultPackage = packages.concurrently;
 
-    devShell = pkgs.mkShell {
-      CARGO_INSTALL_ROOT = "${toString ./.}/.cargo";
-    };
-  });
+        devShell = pkgs.mkShell {
+          CARGO_INSTALL_ROOT = "${toString ./.}/.cargo";
+        };
+      });
 }

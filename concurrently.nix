@@ -1,5 +1,5 @@
 { pkgs ? import <nixpkgs> { }
-, stdenv ? pkgs. stdenv
+, stdenv ? pkgs.stdenv
 , lib ? stdenv.lib
 , rustPlatform ? pkgs.rustPlatform
 , fetchFromGitHub ? pkgs.fetchFromGitHub
@@ -17,10 +17,9 @@ rustPlatform.buildRustPackage rec {
 
   cargoLock = {
     lockFile = ./Cargo.lock;
-    outputHashes = {
-    };
+    outputHashes = { };
   };
-  
+
   meta = with lib; {
     description = "A utility for executing multiple commands concurrently";
     homepage = "https://github.com/tqwewe/concurrently";
